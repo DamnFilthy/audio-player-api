@@ -1,0 +1,142 @@
+class AudioPlayer{
+    constructor(element) {
+        this.$audio = document.querySelector(element);
+        this.$time = document.querySelector(".time"),
+        this.$progress = document.querySelector("#progress");
+        this.$btnPlay = document.querySelector(".play");
+        this.$btnPause = document.querySelector(".pause");
+        this.$btnPrev = document.querySelector(".prev");
+        this.$btnNext = document.querySelector(".next");
+        this.$btnStop = document.querySelector(".stop");
+        this.$blockSongName = document.querySelector('#song-name');
+        this.$blockSongsList = document.querySelector('#songs-list');
+        this.$blockSongDuration = document.querySelector('.song-duration');
+        this.$blockCurrentDuration = document.querySelector('.current-duration');
+        this.track = 0;
+        this.currentTrack = 0;
+        this.playlist = [
+            'Amon-Amarth-gold.mp3',
+            'Amon-Amarth-light.mp3',
+            'Amon-Amarth-universe.mp3',
+            'Amon-Amarth-Shield.mp3',
+            'Amon-Amarth-Wrath.mp3'
+        ];
+
+        this.$blockSongsList.addEventListener('DOMNodeInserted', () => {
+            console.log('hello')
+        })
+
+        this.$blockSongName.innerHTML = this.playlist[0].slice(0, -4)
+
+        this.$audio.onloadedmetadata = () => {
+            this.$blockCurrentDuration.innerText = 0
+            this.$blockSongDuration.innerHTML = Number(this.$audio.duration / 60).toFixed(2)
+         };
+
+        this.playlist.forEach( (song, index) => {
+            let li = document.createElement('li')
+            li.innerText = song
+            li.classList.add('song-item')
+            li.dataset.idx = Number(index)
+            this.$blockSongsList.append(li)
+        })
+
+        this.$btnPlay.addEventListener("click", () => {
+            this.$audio.play();
+            this.intervalTrackRunning();
+        })
+
+        this.$btnPause.addEventListener("click", () => {
+            this.$audio.pause();
+            this.intervalTrackRunning(true);
+        });
+
+        this.$btnStop.addEventListener("click", () => {
+            this.switchTrack()
+        });
+
+        this.$btnPrev.addEventListener("click", () => {
+            if (this.track > 0) {
+                this.track -= 1;
+                this.currentTrack = this.track
+                this.switchTrack();
+            } else {
+                this.track = this.playlist.length - 1;
+                this.currentTrack = this.track
+                this.switchTrack();
+            }
+        });
+
+        this.$btnNext.addEventListener("click", () => {
+            if (this.track < this.playlist.length - 1) {
+                this.track += 1;
+                this.currentTrack = this.track
+                this.switchTrack();
+            } else {
+                this.track = 0;
+                this.currentTrack = this.track
+                this.switchTrack();
+            }
+        });
+
+    }
+
+     intervalTrackRunning(pause= false) {
+
+        let audioPlay = setInterval(() => {
+            let audioTime = Math.round(this.$audio.currentTime),
+                audioLength = Math.round(this.$audio.duration)
+
+            this.$blockCurrentDuration.innerText = (audioTime / 60).toFixed(2)
+            this.$time.style.width = (audioTime * 100) / audioLength + '%';
+            if (audioTime === audioLength && this.$track < this.playlist.length - 1) {
+                this.$track += 1;
+                this.$currentTrack = this.$track
+                this.switchTrack();
+            } else if (audioTime === audioLength && this.$track === this.playlist.length - 1) {
+                this.$track = 0;
+                this.$currentTrack = this.$track
+                this.switchTrack();
+            }
+        }, 10)
+        if(pause){
+            this.$audio.pause();
+            clearInterval(audioPlay)
+        }
+    }
+
+    switchTrack () {
+        this.$audio.src = './audio/' + this.playlist[this.track];
+        this.$audio.currentTime = 0;
+        this.$audio.play();
+        this.setSongName(this.playlist[this.track].slice(0,-4))
+
+        this.$blockSongsListLi = document.querySelectorAll('.song-item');
+
+        this.$blockSongsListLi.forEach(item => {
+            item.classList.remove('active-song')
+        })
+        this.$blockSongsListLi[this.track].classList.add('active-song')
+
+        this.$blockSongsListLi.forEach((item, index) => {
+            this.$blockSongsListLi[0].classList.add('active-song')
+            item.addEventListener("click",  (index) => {
+                this.track = this.$blockSongsListLi[index].getAttribute('data-idx')
+                this.switchTrack()
+
+                this.$blockSongsListLi.forEach(item => {
+                    item.classList.remove('active-song')
+                })
+
+                this.$blockSongsListLi[index].classList.add('active-song')
+            })
+        })
+    }
+
+    setSongName(name) {
+        this.$blockSongName.innerHTML = name
+    }
+
+}
+
+const myAudioPlayer = new AudioPlayer('#audio');
