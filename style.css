@@ -70,10 +70,21 @@
     justify-content: flex-end;
 }
 
-.volume{
-    transform: translate(250px, -23px);
-    /*transform: rotateZ(270deg);*/
+.btn.sound:hover + .sound-area > .volume{
+    display: block;
+}
+.volume-lvl:hover, .volume:hover{
+    display: block;
+}
+.sound-area{
+    display: inline-block;
     position: relative;
+}
+.volume{
+    display: none;
+    position: absolute;
+    top: -17px;
+    left: -7px;
     cursor: pointer;
     background-color: #fad2d2;
     border-radius: 7px;

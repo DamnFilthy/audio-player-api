@@ -1,5 +1,5 @@
-class AudioPlayer{
-    constructor(element) {
+export default  class AudioPlayer{
+    constructor(element, params) {
         this.$audio = document.querySelector(element);
         this.$time = document.querySelector(".time");
         this.$progress = document.querySelector("#progress");
@@ -23,16 +23,10 @@ class AudioPlayer{
         this.$blockVolume = document.querySelector('.volume');
         this.$blockVolumeLVL = document.querySelector('.volume-lvl');
         this.blockSongItem = null,
-        this.interval = null;
+            this.interval = null;
         this.track = 0;
         this.defaultVolume = 0.5;
-        this.playlist = [
-            'Amon-Amarth-gold.mp3',
-            'Amon-Amarth-light.mp3',
-            'Amon-Amarth-universe.mp3',
-            'Amon-Amarth-Shield.mp3',
-            'Amon-Amarth-Wrath.mp3'
-        ];
+        this.playlist = params.playlist;
 
         this.setListeners()
         this.initialise()
@@ -88,7 +82,13 @@ class AudioPlayer{
 
         this.$btnVolume.addEventListener("click",  () => {
             this.$btnVolume.classList.toggle('impulse-active')
-            this.$blockVolume.classList.toggle('hide')
+            if (this.$audio.volume === 0){
+                this.$audio.volume = this.defaultVolume;
+                this.$blockVolumeLVL.style.width = `${this.defaultVolume * 100}%`
+            } else {
+                this.$audio.volume = 0;
+                this.$blockVolumeLVL.style.width = `0%`
+            }
         })
 
         this.$btnReplay.addEventListener("click",  () => {
@@ -99,17 +99,17 @@ class AudioPlayer{
 
         this.$playBtnGroup.forEach(btn => {
             btn.addEventListener("click",  () => {
-            this.$playBtnGroup.forEach(btn => {btn.classList.remove('playBtnActive')})
+                this.$playBtnGroup.forEach(btn => {btn.classList.remove('playBtnActive')})
                 btn.classList.toggle('playBtnActive')
             })
         })
 
         this.$btnGroupImpulse.forEach(btn => {
             btn.addEventListener("click", () => {
-            this.$btnGroupImpulse.forEach(btn => {btn.classList.remove('impulse-active')})
-            setTimeout(()=>{
-                btn.classList.toggle('impulse-active')
-            }, 300)
+                this.$btnGroupImpulse.forEach(btn => {btn.classList.remove('impulse-active')})
+                setTimeout(()=>{
+                    btn.classList.toggle('impulse-active')
+                }, 300)
                 btn.classList.toggle('impulse-active')
             })
         })
@@ -158,7 +158,7 @@ class AudioPlayer{
     }
 
     switchTrack () {
-        this.$audio.src = './audio/' + this.playlist[this.track]
+        this.$audio.src = this.playlist[this.track]
         this.$audio.currentTime = 0;
         this.$audio.play();
         this.setSongName(this.playlist[this.track].slice(0,-4))
@@ -179,7 +179,7 @@ class AudioPlayer{
     }
 
     setFirstSong() {
-        this.$audio.src = './audio/' + this.playlist[0];
+        this.$audio.src = this.playlist[0];
     }
 
     createSongsList() {
@@ -209,5 +209,3 @@ class AudioPlayer{
         })
     }
 }
-
-const myAudioPlayer = new AudioPlayer('#audio');
