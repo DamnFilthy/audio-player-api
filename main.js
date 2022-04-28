@@ -2,7 +2,7 @@ class AudioPlayer{
     constructor(element) {
         this.$audio = document.querySelector(element);
         this.$time = document.querySelector(".time");
-            this.$progress = document.querySelector("#progress");
+        this.$progress = document.querySelector("#progress");
         this.$btnPlay = document.querySelector(".play");
         this.$btnPause = document.querySelector(".pause");
         this.$btnPrev = document.querySelector(".prev");
@@ -38,11 +38,13 @@ class AudioPlayer{
         this.initialise()
         this.initialiseSongList()
     }
+
     initialise(){
         this.createSongsList()
         this.setAudioVolume()
         this.setFirstSong()
     }
+
     setListeners(){
         this.$blockSongName.innerHTML = this.playlist[0].slice(0, -4)
 
@@ -58,7 +60,6 @@ class AudioPlayer{
 
         this.$btnPause.addEventListener("click", () => {
             this.$audio.pause();
-            this.intervalTrackRunning(true);
         });
 
         this.$btnStop.addEventListener("click", () => {
@@ -68,11 +69,9 @@ class AudioPlayer{
         this.$btnPrev.addEventListener("click", () => {
             if (this.track > 0) {
                 this.track -= 1;
-                this.currentTrack = this.track
                 this.switchTrack();
             } else {
                 this.track = this.playlist.length - 1;
-                this.currentTrack = this.track
                 this.switchTrack();
             }
         });
@@ -95,7 +94,7 @@ class AudioPlayer{
         this.$btnReplay.addEventListener("click",  () => {
             this.$btnReplay.classList.toggle('impulse-active')
             clearInterval(this.interval)
-            this.interval = this.intervalTrackRunning(false, true);
+            this.interval = this.intervalTrackRunning(true);
         })
 
         this.$playBtnGroup.forEach(btn => {
@@ -130,7 +129,7 @@ class AudioPlayer{
         })
     }
 
-    intervalTrackRunning(pause=false, replay = false) {
+    intervalTrackRunning(replay = false) {
 
         return setInterval(() => {
             let audioTime = Math.round(this.$audio.currentTime),
@@ -157,6 +156,7 @@ class AudioPlayer{
             }
         }, 10)
     }
+
     switchTrack () {
         this.$audio.src = './audio/' + this.playlist[this.track]
         this.$audio.currentTime = 0;
@@ -168,17 +168,9 @@ class AudioPlayer{
         })
         this.blockSongItem[this.track].classList.add('active-song')
     }
+
     setSongName(name) {
         this.$blockSongName.innerHTML = name
-    }
-
-    createSongsList() {
-        this.playlist.forEach( (song, index) => {
-            let li = document.createElement('li')
-            li.innerText = song
-            li.dataset.idx = index
-            this.$blockSongsList.append(li)
-        })
     }
 
     setAudioVolume() {
@@ -188,6 +180,15 @@ class AudioPlayer{
 
     setFirstSong() {
         this.$audio.src = './audio/' + this.playlist[0];
+    }
+
+    createSongsList() {
+        this.playlist.forEach( (song, index) => {
+            let li = document.createElement('li')
+            li.innerText = song
+            li.dataset.idx = index
+            this.$blockSongsList.append(li)
+        })
     }
 
     initialiseSongList(){
