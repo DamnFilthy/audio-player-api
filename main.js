@@ -1,24 +1,33 @@
-document.addEventListener('DOMContentLoaded', function () {
-
-    let audio = document.getElementById("audio"),
-        time = document.querySelector(".time"),
-        progress = document.querySelector("#progress"),
-        btnPlay = document.querySelector(".play"),
-        btnPause = document.querySelector(".pause"),
-        btnPrev = document.querySelector(".prev"),
-        btnNext = document.querySelector(".next"),
-        btnStop = document.querySelector(".stop"),
-        btnVolume = document.querySelector(".sound"),
-        blockSongName = document.querySelector('#song-name'),
-        blockSongsList = document.querySelector('#songs-list'),
-        blockSongDuration = document.querySelector('.song-duration'),
-        blockCurrentDuration = document.querySelector('.current-duration'),
-        blockVolume = document.querySelector('.volume'),
-        blockVolumeLVL = document.querySelector('.volume-lvl'),
-        track = 0,
-        currentTrack = 0,
-        defaultVolume = 0.5,
-        playlist = [
+class AudioPlayer{
+    constructor(element) {
+        this.$audio = document.querySelector(element);
+        this.$time = document.querySelector(".time");
+            this.$progress = document.querySelector("#progress");
+        this.$btnPlay = document.querySelector(".play");
+        this.$btnPause = document.querySelector(".pause");
+        this.$btnPrev = document.querySelector(".prev");
+        this.$btnNext = document.querySelector(".next");
+        this.$btnStop = document.querySelector(".stop");
+        this.$blockSongName = document.querySelector('#song-name');
+        this.$blockSongsList = document.querySelector('#songs-list');
+        this.$blockSongDuration = document.querySelector('.song-duration');
+        this.$blockCurrentDuration = document.querySelector('.current-duration');
+        this.$playBtnGroup = document.querySelectorAll('.btn-group');
+        this.$btnReplay = document.querySelector(".replay");
+        this.$btnVolume = document.querySelector(".sound");
+        this.$btnGroupImpulse = document.querySelectorAll('.btn-impulse');
+        this.$blockSongName = document.querySelector('#song-name');
+        this.$blockSongsList = document.querySelector('#songs-list');
+        this.$blockSongDuration = document.querySelector('.song-duration');
+        this.$blockCurrentDuration = document.querySelector('.current-duration');
+        this.$blockVolume = document.querySelector('.volume');
+        this.$blockVolumeLVL = document.querySelector('.volume-lvl');
+        this.blockSongItem = null,
+        this.interval = null;
+        this.track = 0;
+        this.currentTrack = 0;
+        this.defaultVolume = 0.5;
+        this.playlist = [
             'Amon-Amarth-gold.mp3',
             'Amon-Amarth-light.mp3',
             'Amon-Amarth-universe.mp3',
@@ -26,145 +35,189 @@ document.addEventListener('DOMContentLoaded', function () {
             'Amon-Amarth-Wrath.mp3'
         ];
 
-    audio.onloadedmetadata = function() {
-        blockCurrentDuration.innerText = 0
-        blockSongDuration.innerHTML = Number(audio.duration / 60).toFixed(2)
-    };
+        this.setListeners()
+        this.initialise()
+        this.initialiseSongList()
+    }
+    initialise(){
+        this.createSongsList()
+        this.setAudioVolume()
+        this.setFirstSong()
+    }
+    setListeners(){
+        this.$blockSongName.innerHTML = this.playlist[0].slice(0, -4)
 
-    setSongName(blockSongName, playlist[0].slice(0, -4))
-    createSongsList(blockSongsList, playlist)
-    setAudioVolume()
-    setFirstSong()
+        this.$audio.onloadedmetadata = () => {
+            this.$blockCurrentDuration.innerText = 0
+            this.$blockSongDuration.innerHTML = Number(this.$audio.duration / 60).toFixed(2)
+        };
 
-    btnPlay.addEventListener("click", function() {
-        audio.play();
-        intervalTrackRunning(audio, time);
-    });
+        this.playlist.forEach( (song, index) => {
+            let li = document.createElement('li')
+            li.innerText = song
+            li.classList.add('song-item')
+            li.dataset.idx = index
+            this.$blockSongsList.append(li)
+        })
 
-    btnPause.addEventListener("click", function() {
-        audio.pause();
-        intervalTrackRunning(audio, time, true);
-    });
+        this.$btnPlay.addEventListener("click", () => {
+            this.$audio.play();
+            this.intervalTrackRunning();
+        })
 
-    btnStop.addEventListener("click", function() {
-        switchTrack (blockSongName, audio, playlist, currentTrack)
-    });
+        this.$btnPause.addEventListener("click", () => {
+            this.$audio.pause();
+            this.intervalTrackRunning(true);
+        });
 
-    btnVolume.addEventListener("click", function () {
-        blockVolume.classList.toggle('hide')
-    })
+        this.$btnStop.addEventListener("click", () => {
+            this.switchTrack()
+        });
 
-    btnPrev.addEventListener("click", function() {
-        if (track > 0) {
-            track -= 1;
-            currentTrack = track
-            switchTrack(blockSongName, audio, playlist, track);
-        } else {
-            track = playlist.length - 1;
-            currentTrack = track
-            switchTrack(blockSongName, audio, playlist, track);
-        }
-    });
+        this.$btnPrev.addEventListener("click", () => {
+            if (this.track > 0) {
+                this.track -= 1;
+                this.currentTrack = this.track
+                this.switchTrack();
+            } else {
+                this.track = this.playlist.length - 1;
+                this.currentTrack = this.track
+                this.switchTrack();
+            }
+        });
 
-    btnNext.addEventListener("click", function() {
-        if (track < playlist.length - 1) {
-            track += 1;
-            currentTrack = track
-            switchTrack(blockSongName, audio, playlist, track);
-        } else {
-            track = 0;
-            currentTrack = track
-            switchTrack(blockSongName, audio, playlist, track);
-        }
-    });
+        this.$btnNext.addEventListener("click", () => {
+            if (this.track < this.playlist.length - 1) {
+                this.track += 1;
+                this.currentTrack = this.track
+                this.switchTrack();
+            } else {
+                this.track = 0;
+                this.currentTrack = this.track
+                this.switchTrack();
+            }
+        });
 
-    progress.addEventListener("click", function (event) {
-        let widthLeft = time.offsetLeft,
-            x = event.pageX - widthLeft,
-            xPersent =  x / this.offsetWidth * 100;
-        audio.currentTime = audio.duration * (xPersent / 100);
-    })
+        this.$btnVolume.addEventListener("click",  () => {
+            this.$btnVolume.classList.toggle('impulse-active')
+            this.$blockVolume.classList.toggle('hide')
+        })
 
-    blockVolume.addEventListener('click', function (event) {
-        let blockWidth = blockVolume.offsetWidth,
-            percent = Math.floor((event.offsetX / blockWidth) * 100)
-        blockVolumeLVL.style.width = `${percent}%`
-        audio.volume = `${percent / 100}`
-    })
+        this.$btnReplay.addEventListener("click",  () => {
+            this.$btnReplay.classList.toggle('impulse-active')
+            clearInterval(this.interval)
+            this.interval = this.intervalTrackRunning(false, true);
+        })
 
-    let blockSongItem = blockSongsList.querySelectorAll('li');
-
-    blockSongItem.forEach(item => {
-        blockSongItem[0].classList.add('active-song')
-        item.addEventListener("click", function () {
-            let track = this.getAttribute('data-idx')
-            currentTrack = track
-            switchTrack (blockSongName, audio, playlist, track)
-
-            blockSongItem.forEach(item => {
-                item.classList.remove('active-song')
+        this.$playBtnGroup.forEach(btn => {
+            btn.addEventListener("click",  () => {
+            this.$playBtnGroup.forEach(btn => {btn.classList.remove('playBtnActive')})
+                btn.classList.toggle('playBtnActive')
             })
-
-            this.classList.add('active-song')
         })
-    })
 
-
-    function switchTrack (blockSongName, player, playlist, numOfTrack) {
-        player.src = './audio/' + playlist[numOfTrack];
-        player.currentTime = 0;
-        player.play();
-        setSongName(blockSongName, playlist[numOfTrack].slice(0,-4))
-
-        blockSongItem.forEach(item => {
-            item.classList.remove('active-song')
+        this.$btnGroupImpulse.forEach(btn => {
+            btn.addEventListener("click", function () {
+            this.$btnGroupImpulse.forEach(btn => {btn.classList.remove('impulse-active')})
+            setTimeout(()=>{
+                this.classList.toggle('impulse-active')
+            }, 300)
+            this.classList.toggle('impulse-active')
+            })
         })
-        blockSongItem[numOfTrack].classList.add('active-song')
+
+        this.$progress.addEventListener("click",  (event) => {
+            let widthLeft = this.$time.offsetLeft,
+                x = event.pageX - widthLeft,
+                xPersent =  x / this.$progress.offsetWidth * 100;
+            this.$audio.currentTime = this.$audio.duration * (xPersent / 100);
+        })
+
+        this.$blockVolume.addEventListener('click',  (event) => {
+            let blockWidth = this.$blockVolume.offsetWidth,
+                percent = Math.floor((event.offsetX / blockWidth) * 100)
+            this.$blockVolumeLVL.style.width = `${percent}%`
+            this.$audio.volume = `${percent / 100}`
+        })
     }
 
-    function intervalTrackRunning(audio, time, pause=false) {
+    intervalTrackRunning(pause=false, replay = false) {
 
-        let audioPlay = setInterval(function() {
-            let audioTime = Math.round(audio.currentTime),
-                audioLength = Math.round(audio.duration)
+        return setInterval(() => {
+            let audioTime = Math.round(this.$audio.currentTime),
+                audioLength = Math.round(this.$audio.duration)
 
-            blockCurrentDuration.innerText = (audioTime / 60).toFixed(2)
-            time.style.width = (audioTime * 100) / audioLength + '%';
-            if (audioTime === audioLength && track < playlist.length - 1) {
-                track += 1;
-                currentTrack = track
-                switchTrack(blockSongName, audio, playlist, track);
-            } else if (audioTime === audioLength && track === playlist.length - 1) {
-                track = 0;
-                currentTrack = track
-                switchTrack(blockSongName, audio, playlist, track);
+            this.$blockCurrentDuration.innerText = (audioTime / 60).toFixed(2)
+            this.$time.style.width = (audioTime * 100) / audioLength + '%';
+            if (audioTime === audioLength && this.track < this.playlist.length - 1) {
+                if (replay){
+                    this.switchTrack();
+                } else {
+                    this.track += 1;
+                    this.currentTrack = this.track
+                    this.switchTrack();
+                }
+            } else if (audioTime === audioLength && this.track === this.playlist.length - 1) {
+                if (replay){
+                    this.switchTrack();
+                } else {
+                    this.track = 0;
+                    this.currentTrack = this.track
+                    this.switchTrack();
+                }
             }
         }, 10)
-        if(pause){
-            audio.pause();
-            clearInterval(audioPlay)
-        }
+    }
+    switchTrack () {
+        this.$audio.src = './audio/' + this.playlist[this.track]
+        this.$audio.currentTime = 0;
+        this.$audio.play();
+        this.setSongName(this.playlist[this.track].slice(0,-4))
+
+        this.blockSongItem.forEach(item => {
+            item.classList.remove('active-song')
+        })
+        this.blockSongItem[this.track].classList.add('active-song')
+    }
+    setSongName(name) {
+        this.$blockSongName.innerHTML = name
     }
 
-    function setSongName(block, name) {
-        block.innerHTML = name
-    }
-
-    function createSongsList(blockSongsList, playlist) {
-        playlist.forEach( (song, index) => {
+    createSongsList() {
+        this.playlist.forEach( (song, index) => {
             let li = document.createElement('li')
             li.innerText = song
             li.dataset.idx = index
-            blockSongsList.append(li)
+            this.$blockSongsList.append(li)
         })
     }
 
-    function setAudioVolume() {
-        audio.volume = defaultVolume
-        blockVolumeLVL.style.width = `${defaultVolume * 100}%`
+    setAudioVolume() {
+        this.$audio.volume = this.defaultVolume
+        this.$blockVolumeLVL.style.width = `${this.defaultVolume * 100}%`
     }
 
-    function setFirstSong() {
-        audio.src = './audio/' + playlist[0];
+    setFirstSong() {
+        this.$audio.src = './audio/' + this.playlist[0];
     }
-})
+
+    initialiseSongList(){
+        this.blockSongItem = this.$blockSongsList.querySelectorAll('li');
+
+        this.blockSongItem.forEach(item => {
+            this.blockSongItem[0].classList.add('active-song')
+            item.addEventListener("click",  () => {
+                this.track = item.getAttribute('data-idx')
+                this.switchTrack()
+
+                this.blockSongItem.forEach(item => {
+                    item.classList.remove('active-song')
+                })
+
+                item.classList.add('active-song')
+            })
+        })
+    }
+}
+
+const myAudioPlayer = new AudioPlayer('#audio');

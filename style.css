@@ -40,7 +40,6 @@
     height: 30px;
 }
 
-
 .songs-list{
     padding: 10px 50px;
     margin-top: 20px;
@@ -72,7 +71,7 @@
 }
 
 .volume{
-    transform: translate(209px, -23px);
+    transform: translate(250px, -23px);
     /*transform: rotateZ(270deg);*/
     position: relative;
     cursor: pointer;
@@ -96,3 +95,11 @@
     display: none;
 }
 
+
+.playBtnActive{
+    fill: #37ea54;
+}
+
+.impulse-active{
+    background-color: yellow;
+}
