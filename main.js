@@ -25,7 +25,6 @@ class AudioPlayer{
         this.blockSongItem = null,
         this.interval = null;
         this.track = 0;
-        this.currentTrack = 0;
         this.defaultVolume = 0.5;
         this.playlist = [
             'Amon-Amarth-gold.mp3',
@@ -51,14 +50,6 @@ class AudioPlayer{
             this.$blockCurrentDuration.innerText = 0
             this.$blockSongDuration.innerHTML = Number(this.$audio.duration / 60).toFixed(2)
         };
-
-        this.playlist.forEach( (song, index) => {
-            let li = document.createElement('li')
-            li.innerText = song
-            li.classList.add('song-item')
-            li.dataset.idx = index
-            this.$blockSongsList.append(li)
-        })
 
         this.$btnPlay.addEventListener("click", () => {
             this.$audio.play();
@@ -89,11 +80,9 @@ class AudioPlayer{
         this.$btnNext.addEventListener("click", () => {
             if (this.track < this.playlist.length - 1) {
                 this.track += 1;
-                this.currentTrack = this.track
                 this.switchTrack();
             } else {
                 this.track = 0;
-                this.currentTrack = this.track
                 this.switchTrack();
             }
         });
@@ -117,12 +106,12 @@ class AudioPlayer{
         })
 
         this.$btnGroupImpulse.forEach(btn => {
-            btn.addEventListener("click", function () {
+            btn.addEventListener("click", () => {
             this.$btnGroupImpulse.forEach(btn => {btn.classList.remove('impulse-active')})
             setTimeout(()=>{
-                this.classList.toggle('impulse-active')
+                btn.classList.toggle('impulse-active')
             }, 300)
-            this.classList.toggle('impulse-active')
+                btn.classList.toggle('impulse-active')
             })
         })
 
@@ -207,7 +196,7 @@ class AudioPlayer{
         this.blockSongItem.forEach(item => {
             this.blockSongItem[0].classList.add('active-song')
             item.addEventListener("click",  () => {
-                this.track = item.getAttribute('data-idx')
+                this.track = Number(item.getAttribute('data-idx'))
                 this.switchTrack()
 
                 this.blockSongItem.forEach(item => {
