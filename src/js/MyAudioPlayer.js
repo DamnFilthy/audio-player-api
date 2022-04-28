@@ -1,27 +1,29 @@
 export default  class AudioPlayer{
     constructor(element, params) {
-        this.$audio = document.querySelector(element);
-        this.$time = document.querySelector(".time");
-        this.$progress = document.querySelector("#progress");
-        this.$btnPlay = document.querySelector(".play");
-        this.$btnPause = document.querySelector(".pause");
-        this.$btnPrev = document.querySelector(".prev");
-        this.$btnNext = document.querySelector(".next");
-        this.$btnStop = document.querySelector(".stop");
-        this.$blockSongName = document.querySelector('#song-name');
-        this.$blockSongsList = document.querySelector('#songs-list');
-        this.$blockSongDuration = document.querySelector('.song-duration');
-        this.$blockCurrentDuration = document.querySelector('.current-duration');
-        this.$playBtnGroup = document.querySelectorAll('.btn-group');
-        this.$btnReplay = document.querySelector(".replay");
-        this.$btnVolume = document.querySelector(".sound");
-        this.$btnGroupImpulse = document.querySelectorAll('.btn-impulse');
-        this.$blockSongName = document.querySelector('#song-name');
-        this.$blockSongsList = document.querySelector('#songs-list');
-        this.$blockSongDuration = document.querySelector('.song-duration');
-        this.$blockCurrentDuration = document.querySelector('.current-duration');
-        this.$blockVolume = document.querySelector('.volume');
-        this.$blockVolumeLVL = document.querySelector('.volume-lvl');
+        this.allGlobalAudios = document.querySelectorAll('audio');
+        this.$audioPlayer = document.querySelector(element);
+        this.$audio = this.$audioPlayer.querySelector('#audio');
+        this.$time = this.$audioPlayer.querySelector(".time");
+        this.$progress = this.$audioPlayer.querySelector("#progress");
+        this.$btnPlay = this.$audioPlayer.querySelector(".play");
+        this.$btnPause = this.$audioPlayer.querySelector(".pause");
+        this.$btnPrev = this.$audioPlayer.querySelector(".prev");
+        this.$btnNext = this.$audioPlayer.querySelector(".next");
+        this.$btnStop = this.$audioPlayer.querySelector(".stop");
+        this.$blockSongName = this.$audioPlayer.querySelector('#song-name');
+        this.$blockSongsList = this.$audioPlayer.querySelector('#songs-list');
+        this.$blockSongDuration = this.$audioPlayer.querySelector('.song-duration');
+        this.$blockCurrentDuration = this.$audioPlayer.querySelector('.current-duration');
+        this.$playBtnGroup = this.$audioPlayer.querySelectorAll('.btn-group');
+        this.$btnReplay = this.$audioPlayer.querySelector(".replay");
+        this.$btnVolume = this.$audioPlayer.querySelector(".sound");
+        this.$btnGroupImpulse = this.$audioPlayer.querySelectorAll('.btn-impulse');
+        this.$blockSongName = this.$audioPlayer.querySelector('#song-name');
+        this.$blockSongsList = this.$audioPlayer.querySelector('#songs-list');
+        this.$blockSongDuration = this.$audioPlayer.querySelector('.song-duration');
+        this.$blockCurrentDuration = this.$audioPlayer.querySelector('.current-duration');
+        this.$blockVolume = this.$audioPlayer.querySelector('.volume');
+        this.$blockVolumeLVL = this.$audioPlayer.querySelector('.volume-lvl');
         this.blockSongItem = null,
             this.interval = null;
         this.track = 0;
@@ -48,6 +50,9 @@ export default  class AudioPlayer{
         };
 
         this.$btnPlay.addEventListener("click", () => {
+            this.allGlobalAudios.forEach(player => {
+                player.pause()
+            })
             this.$audio.play();
             this.intervalTrackRunning();
         })
