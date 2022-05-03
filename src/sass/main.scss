@@ -21,11 +21,14 @@
     background-color: #dddddd;
     margin: 10px 0
   }
-  &__song-name{
-    text-align: center;
-    font-size: 22px;
+  &__song-author{
+    font-size: 38px;
     font-weight: bold;
     color: gray;
+  }
+  &__track-name{
+    font-size: 18px;
+    color: #6c0c0c;
   }
   &__time-progress{
     border-radius: 25px;
@@ -56,6 +59,13 @@
       height: 30px;
     }
   }
+  &__btn-active{
+    svg{
+      path{
+        fill: green;
+      }
+    }
+  }
   &__sound-area{
     display: inline-block;
     position: relative;
@@ -78,10 +88,8 @@
     background-color: #a77ef1;
   }
   &__songs-list{
-    width: 400px;
     padding: 10px 50px;
     margin-top: 20px;
-    border: 1px solid black;
     cursor: pointer;
     ol li {
       cursor: pointer;
@@ -101,10 +109,7 @@
 }
 
 
-  .active-song{
-    color: red;
-    font-size: 22px;
-  }
+
 
   .duration-block{
     margin: 5px 0;
@@ -127,9 +132,26 @@
   }
 
   .track-item{
+    transition: .3s ease-in-out;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     margin-bottom: 15px;
+    img {
+      margin-right: 15px;
+    }
   }
 
+.artist-name{
+  font-size: 38px;
+  color: gray;
+  font-weight: bold;
+}
+.track-name{
+  font-size: 18px;
+}
+
+.active-song{
+  padding: 15px;
+  border: 1px solid #60c660;
+  border-radius: 10px;
+}

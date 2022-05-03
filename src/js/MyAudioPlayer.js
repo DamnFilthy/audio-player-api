@@ -16,11 +16,12 @@ export default  class AudioPlayer{
         this.$btnReplay = this.$audioPlayer.querySelector("#replay");
         this.$btnVolume = this.$audioPlayer.querySelector("#sound");
         this.$blockSongName = this.$audioPlayer.querySelector('#song-name');
+        this.$blockAuthorName = this.$blockSongName.querySelector('#song-author');
+        this.$blockTrackName = this.$blockSongName.querySelector('#track-name');
         this.$blockSongsList = this.$audioPlayer.querySelector('#songs-list');
         this.$blockSongDuration = this.$audioPlayer.querySelector('.song-duration');
         this.$blockCurrentDuration = this.$audioPlayer.querySelector('#current-duration');
         this.$blockSongDuration = this.$audioPlayer.querySelector('#song-duration');
-        this.$blockSongName = this.$audioPlayer.querySelector('#song-name');
         this.$blockVolume = this.$audioPlayer.querySelector('#volume');
         this.$blockVolumeLVL = this.$audioPlayer.querySelector('#volume-lvl');
         this.blockSongItem = null;
@@ -45,7 +46,8 @@ export default  class AudioPlayer{
     }
 
     setListeners(){
-        this.$blockSongName.innerHTML = this.playlist[0].trackName
+        this.$blockAuthorName.innerText = this.playlist[0].artistName
+        this.$blockTrackName.innerText = this.playlist[0].trackName
 
         this.$audio.onloadedmetadata = () => {
             this.$blockCurrentDuration.innerText = 0
@@ -73,6 +75,8 @@ export default  class AudioPlayer{
         });
 
         this.$btnPrev.addEventListener("click", () => {
+            this.$btnPlay.classList.add('hide')
+            this.$btnPause.classList.remove('hide')
             if (this.track > 0) {
                 this.track -= 1;
                 this.switchTrack();
@@ -83,6 +87,8 @@ export default  class AudioPlayer{
         });
 
         this.$btnNext.addEventListener("click", () => {
+            this.$btnPlay.classList.add('hide')
+            this.$btnPause.classList.remove('hide')
             if (this.track < this.playlist.length - 1) {
                 this.track += 1;
                 this.switchTrack();
@@ -104,7 +110,7 @@ export default  class AudioPlayer{
         })
 
         this.$btnReplay.addEventListener("click",  () => {
-            this.$btnReplay.classList.toggle('impulse-active')
+            this.$btnReplay.classList.toggle('audio-player__btn-active')
             clearInterval(this.interval)
             this.replay = !this.replay
             this.interval = this.intervalTrackRunning();
@@ -165,14 +171,17 @@ export default  class AudioPlayer{
         this.$audio.play();
         this.setSongName(this.playlist[this.track].trackName)
 
-        this.blockSongItem.forEach(item => {
-            item.classList.remove('active-song')
-        })
-        this.blockSongItem[this.track].classList.add('active-song')
+        if (this.params.songList) {
+            this.blockSongItem.forEach(item => {
+                item.classList.remove('active-song')
+            })
+            this.blockSongItem[this.track].classList.add('active-song')
+        }
     }
 
     setSongName(name) {
-        this.$blockSongName.innerHTML = name
+        this.$blockAuthorName.innerText = this.playlist[this.track].artistName
+        this.$blockTrackName.innerText = this.playlist[this.track].trackName
     }
 
     setAudioVolume() {
@@ -242,21 +251,29 @@ export default  class AudioPlayer{
 
     createSongsList() {
         this.playlist.forEach( (song, index) => {
+            let divBlockName = document.createElement('div')
+            let divArtistName = document.createElement('div')
+            let divTrackName = document.createElement('div')
             let div = document.createElement('div')
-            let span = document.createElement('span')
             let img = document.createElement('img')
             div.classList.add('track-item')
             img.classList.add('track-img')
-            span.innerText = song.trackName
+            divArtistName.classList.add('artist-name')
+            divTrackName.classList.add('track-name')
+            divArtistName.innerText = song.artistName
+            divTrackName.innerText = song.trackName
+            divBlockName.append(divArtistName)
+            divBlockName.append(divTrackName)
+
             img.src = song.trackImg
             div.append(img)
-            div.append(span)
+            div.append(divBlockName)
             div.dataset.idx = index
             this.$blockSongsList.append(div)
         })
     }
     initialiseSongList(){
-        this.blockSongItem = this.$blockSongsList.querySelectorAll('div');
+        this.blockSongItem = this.$blockSongsList.querySelectorAll('.track-item');
 
         this.blockSongItem.forEach(item => {
             this.blockSongItem[0].classList.add('active-song')
