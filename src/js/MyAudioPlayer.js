@@ -29,6 +29,7 @@ export default  class AudioPlayer{
         this.replay = false;
         this.track = 0;
         this.defaultVolume = 0.5;
+        this.audioPLay = false;
         this.playlist = params.playlist;
 
         this.setListeners()
@@ -62,12 +63,14 @@ export default  class AudioPlayer{
             this.$btnPause.classList.remove('hide')
             this.$audio.play();
             this.intervalTrackRunning();
+            this.audioPLay = true;
         })
 
         this.$btnPause.addEventListener("click", () => {
             this.$btnPlay.classList.remove('hide')
             this.$btnPause.classList.add('hide')
             this.$audio.pause();
+            this.audioPLay = false;
         });
 
         this.$btnRerun.addEventListener("click", () => {
@@ -121,6 +124,16 @@ export default  class AudioPlayer{
                 x = event.pageX - widthLeft,
                 xPersent =  x / this.$progress.offsetWidth * 100;
             this.$audio.currentTime = this.$audio.duration * (xPersent / 100);
+
+            if (!this.audioPLay){
+                this.allGlobalAudios.forEach(player => {
+                    player.pause()
+                })
+                this.$btnPlay.classList.add('hide')
+                this.$btnPause.classList.remove('hide')
+                this.$audio.play();
+                this.intervalTrackRunning();
+            }
         })
 
         this.$blockVolume.addEventListener('click',  (event) => {
@@ -166,6 +179,7 @@ export default  class AudioPlayer{
     }
 
     switchTrack () {
+        this.audioPLay = true
         this.$audio.src = this.playlist[this.track].trackSrc
         this.$audio.currentTime = 0;
         this.$audio.play();

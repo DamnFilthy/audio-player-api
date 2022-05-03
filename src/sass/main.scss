@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .audio-player {
@@ -35,7 +36,7 @@
     transition: .3s ease-in-out;
     width: 0;
     height: 7px;
-    background-color: #474747
+    background-color: #474747;
   }
   &__btn-wrapper{
     display: flex;
@@ -154,4 +155,28 @@
   padding: 15px;
   border: 1px solid #60c660;
   border-radius: 10px;
+}
+
+@media (max-width: 692px){
+  .audio-player__controls {
+    padding: 15px 10px;
+  }
+  .audio-player__btn-wrapper {
+    padding: 15px 0;
+  }
+}
+@media (max-width: 444px){
+  .audio-player__btn-wrapper{
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .audio-player__songs-list {
+    padding: 10px 10px;
+  }
+  .active-song {
+    padding: 5px;
+  }
+  .artist-name {
+    font-size: 34px;
+  }
 }
