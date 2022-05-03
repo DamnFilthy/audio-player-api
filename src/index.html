@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/main.min.css">
+    <title>Audio-player</title>
+</head>
+<body>
+<div class="wrapper">
+    <div id="audio-player">
+        <div class="audio-player__panel">
+            <audio id="audio" preload="metadata"></audio>
+            <div class="audio-player__controls" id="controls">
+                <div class="audio-player__song-name" id="song-name"></div>
+                <div class="audio-player__duration-block">
+                    <span class="current-duration" id="current-duration"></span> /
+                    <span class="song-duration" id="song-duration"></span>
+                </div>
+                <div class="audio-player__audio-track" id="progress">
+                    <div class="audio-player__time-progress" id="progress-time"></div>
+                </div>
+                <div class="audio-player__btn-wrapper">
+                    <div>
+                        <button class="audio-player__btn" id="download-track"></button>
+                        <button class="audio-player__btn" id="vk-share"></button>
+                    </div>
+                    <div>
+                        <button id="prev" class="audio-player__btn audio-player__prev"></button>
+                        <button id="play" class="audio-player__btn audio-player__play"></button>
+                        <button id="pause" class="audio-player__btn audio-player__pause hide"></button>
+                        <button id="next" class="audio-player__btn audio-player__next"></button>
+                    </div>
+                    <div>
+                        <button id="rerun" class="audio-player__btn audio-player__rerun"></button>
+                        <button id="replay" class="audio-player__btn audio-player__replay"></button>
+                        <div class="audio-player__sound-controller">
+                            <button id="sound" class="audio-player__btn audio-player__sound"></button>
+                            <div class="audio-player__sound-area">
+                                <div class="audio-player__volume" id="volume">
+                                    <div class="audio-player__volume-lvl" id="volume-lvl"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="audio-player__songs-list">
+            <div id="songs-list"></div>
+        </div>
+    </div>
+</div>
+<script src="js/script.min.js"></script>
+</body>
+</html>
