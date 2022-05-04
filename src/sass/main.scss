@@ -72,6 +72,7 @@
     position: relative;
   }
   &__volume{
+    position: absolute;
     cursor: pointer;
     background-color: #fad2d2;
     border-radius: 7px;
@@ -79,7 +80,7 @@
     width: 100px;
   }
   &__volume-lvl{
-    transition: .3s ease-in-out;
+    cursor: pointer;
     position: absolute;
     border-radius: 7px;
     top: 0;
@@ -87,6 +88,17 @@
     height: 4px;
     width: 0;
     background-color: #a77ef1;
+    &::after{
+      content: '';
+      position: absolute;
+      top: -4px;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50px;
+      background-color: #a77ef1;
+      border: 1px solid #a77ef1;
+    }
   }
   &__songs-list{
     padding: 10px 50px;
@@ -108,40 +120,34 @@
     align-items: center;
   }
 }
-
-
-
-
-  .duration-block{
+.pointer-active.audio-player__volume-lvl::after{
+  border: 1px solid black;
+}
+.duration-block{
     margin: 5px 0;
     display: flex;
     justify-content: flex-end;
   }
-
-
-  .hide{
-    display: none;
+.hide{
+  display: none;
+}
+.show{
+  display: block;
+}
+.track-img{
+  height: 50px;
+  width: 50px;
+  border-radius: 50px;
+}
+.track-item{
+  transition: .3s ease-in-out;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  img {
+    margin-right: 15px;
   }
-  .show{
-    display: block;
-  }
-
-  .track-img{
-    height: 50px;
-    width: 50px;
-    border-radius: 50px;
-  }
-
-  .track-item{
-    transition: .3s ease-in-out;
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    img {
-      margin-right: 15px;
-    }
-  }
-
+}
 .artist-name{
   font-size: 38px;
   color: gray;
@@ -150,7 +156,6 @@
 .track-name{
   font-size: 18px;
 }
-
 .active-song{
   padding: 15px;
   border: 1px solid #60c660;

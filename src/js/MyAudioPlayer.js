@@ -150,6 +150,31 @@ export default  class AudioPlayer{
         this.$btnVKshare.addEventListener("click", () => {
             this.VKshare()
         })
+
+        this.$blockVolumeLVL.onmousedown = () => {
+            this.$blockVolumeLVL.ondragstart = () => {
+                return false;
+            };
+
+            document.onmousemove = (e) => {
+                this.$blockVolumeLVL.classList.add('pointer-active')
+                console.log(e.offsetX)
+                let blockWidth = this.$blockVolume.offsetWidth,
+                    percent = Math.floor((e.offsetX / blockWidth) * 100)
+                if (percent >= 0 && percent <= 100){
+                    this.$blockVolumeLVL.style.width = `${percent}%`
+                    this.$audio.volume = `${percent / 100}`
+                }
+            }
+
+            document.onmouseup = () => {
+                document.onmousemove = null;
+                document.onmouseup = null;
+                this.$blockVolumeLVL.classList.remove('pointer-active')
+            }
+
+            return false;
+        }
     }
 
     intervalTrackRunning() {
