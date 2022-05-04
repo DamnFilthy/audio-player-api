@@ -152,18 +152,18 @@ export default  class AudioPlayer{
         })
 
         this.$blockVolumeLVL.onmousedown = () => {
+
             this.$blockVolumeLVL.ondragstart = () => {
                 return false;
             };
 
+            this.$blockVolumeLVL.classList.add('pointer-active')
+
             document.onmousemove = (e) => {
-                this.$blockVolumeLVL.classList.add('pointer-active')
-                console.log(e.offsetX)
-                let blockWidth = this.$blockVolume.offsetWidth,
-                    percent = Math.floor((e.offsetX / blockWidth) * 100)
-                if (percent >= 0 && percent <= 100){
-                    this.$blockVolumeLVL.style.width = `${percent}%`
-                    this.$audio.volume = `${percent / 100}`
+                console.log(e)
+                if ( e.offsetX >= 0 &&  e.offsetX <= 100){
+                    this.$blockVolumeLVL.style.width = `${ e.offsetX}%`
+                    this.$audio.volume = `${ e.offsetX / 100}`
                 }
             }
 
