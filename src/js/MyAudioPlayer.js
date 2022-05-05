@@ -32,6 +32,12 @@ export default  class AudioPlayer{
         this.audioPLay = false;
         this.playlist = params.playlist;
 
+        // Координаты слайдера относительно страницы
+        this.sliderRect = this.$blockVolume.getBoundingClientRect();
+        this.sliderRectWithScroll = {};
+        this.sliderRectWithScroll.top = this.sliderRect.top + pageYOffset;
+        this.sliderRectWithScroll.left = this.sliderRect.left + pageXOffset;
+
         this.setListeners()
         this.initialise()
     }
@@ -151,19 +157,39 @@ export default  class AudioPlayer{
             this.VKshare()
         })
 
-        this.$blockVolumeLVL.onmousedown = () => {
+        this.$blockVolumeLVL.onmousedown = (e) => {
 
             this.$blockVolumeLVL.ondragstart = () => {
                 return false;
             };
 
+            // Координаты ползунка относительно страницы
+            this.itemRect = this.$blockVolumeLVL.getBoundingClientRect();
+            this.itemRectWithScroll = {};
+            this.itemRectWithScroll.top = this.itemRect.top + pageYOffset;
+            this.itemRectWithScroll.left = this.itemRect.left + pageXOffset;
+
+            // Крайнее правое положение, которого может достичь ползунок
+            this.rightBoundary = this.$blockVolume.offsetWidth - this.$blockVolumeLVL.offsetWidth;
+
+            // Смещение курсора относительно начала ползунка
+            this.shiftX = e.pageX - this.itemRectWithScroll.left;
+
             this.$blockVolumeLVL.classList.add('pointer-active')
 
             document.onmousemove = (e) => {
-                console.log(e)
+                this.newLeft = e.pageX - this.sliderRectWithScroll.left - this.shiftX;
+
+                // Ползунок не может выходить за границы
+                if (this.newLeft < 0) this.newLeft = 0;
+                if (this.newLeft > this.rightBoundary) this.newLeft = this.rightBoundary;
+
+
                 if ( e.offsetX >= 0 &&  e.offsetX <= 100){
                     this.$blockVolumeLVL.style.width = `${ e.offsetX}%`
                     this.$audio.volume = `${ e.offsetX / 100}`
+                } else {
+                    this.$blockVolumeLVL.style.width = `${Math.round(this.newLeft / this.rightBoundary * 100)}%`
                 }
             }
 
